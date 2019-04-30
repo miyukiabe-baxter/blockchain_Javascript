@@ -51,5 +51,6 @@ Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, n
   let dataAsString = previousBlockHash + nonce.toString() + JSON.stringify(currentBlockData)
   const hash = SHA256(dataAsString)
   return hash
+
 }
 module.exports = Blockchain;
