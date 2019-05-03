@@ -1,8 +1,7 @@
-const Blockchain = require('./blockchain')
-//const Blockchain = require('./class_blockchain')
+//const Blockchain = require('./blockchain')
+const Blockchain = require('./class_blockchain')
 
-const bitcoin = new Blockchain
-
+const bitcoin = new Blockchain()
 
 bitcoin.createNewBlock(10, 'testtest', 'previoustest')
 // bitcoin.createNewBlock(20, 'Yo', 'previoustest')
@@ -29,7 +28,8 @@ const currentBlockData = [
     recipient: 'naaa'
   }
 ]
-let nonce = 100
 
-let result = bitcoin.hashBlock(previousBlockHash, nonce, currentBlockData)
-console.log('hash', result)
+console.log(bitcoin.hashBlock(previousBlockHash, currentBlockData, 62692))
+//console.log(bitcoin.proofOfWork(previousBlockHash, currentBlockData))
+//let result = bitcoin.hashBlock(previousBlockHash, nonce, currentBlockData)
+

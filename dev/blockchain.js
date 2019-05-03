@@ -4,7 +4,10 @@ const Blockchain = function () {
   //this.chain array holds each ledger as an element
   this.chain = [];
   //This is a pending transitions that will go into a block when we invoke newBlock().
-  this.pendingTransactions = []
+  this.pendingTransactions = [];
+  //Creating first new Block. It does not matter what we pass as nonce, previousHash and hash.
+  this.createNewBlock(100, '0', '0')
+  
 }
 
 //create new block and it will be an element of this.chain
@@ -53,4 +56,17 @@ Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, n
   return hash
 
 }
+
+Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData) {
+  let nonce = 0;
+  let hash = this.hashBlock(previousBlockHash, currentBlockData, nonce)
+  
+  while (hash.slice(0,4) !== '0000') {
+    nonce++
+    hash = this.hashBlock(previousBlockHash, currentBlockData, nonce)
+  }
+  //
+  return nonce
+}
+
 module.exports = Blockchain;
