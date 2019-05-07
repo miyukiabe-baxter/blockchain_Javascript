@@ -2,9 +2,12 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const Blockchain = require('./blockchain')
+
 //uuid creates a unique random string. We use this as this node's address
 const uuid = require('uuid/v1')
 const nodeAddress = uuid().split('-').join('')
+
+const PORT = process.argv[2]
 
 const bitcoin = new Blockchain()
 
@@ -48,7 +51,6 @@ bitcoin.createNewTransaction(12.5, '00', nodeAddress)
   })
 })
 
-const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}...`)
 })

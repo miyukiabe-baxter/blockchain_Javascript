@@ -1,10 +1,16 @@
 const SHA256 = require("sha256");
+const currentNodeUrl = process.argv[3]
+
 //Constructor Function Version
 const Blockchain = function () {
   //this.chain array holds each ledger as an element
   this.chain = [];
   //This is a pending transitions that will go into a block when we invoke newBlock().
   this.pendingTransactions = [];
+  //Each node will be created separetly and need to know which node it is. Therefore, we get curretNode's address
+  this.currentNodeUrl = currentNodeUrl
+  //we need not know which nodes are in the same network. Below array is keeping track of it.
+  this.networkNodes = []
   //Creating first new Block. It does not matter what we pass as nonce, previousHash and hash.
   this.createNewBlock(100, '0', '0')
   
