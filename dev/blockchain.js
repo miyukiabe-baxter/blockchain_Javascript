@@ -1,5 +1,6 @@
 const SHA256 = require("sha256");
 const currentNodeUrl = process.argv[3]
+const uuid = require('uuid/v1')
 
 //Constructor Function Version
 const Blockchain = function () {
@@ -9,7 +10,7 @@ const Blockchain = function () {
   this.pendingTransactions = [];
   //Each node will be created separetly and need to know which node it is. Therefore, we get curretNode's address
   this.currentNodeUrl = currentNodeUrl
-  //we need not know which nodes are in the same network. Below array is keeping track of it.
+  //we need to know which nodes are in the same network. Below array is keeping track of it.
   this.networkNodes = []
   //Creating first new Block. It does not matter what we pass as nonce, previousHash and hash.
   this.createNewBlock(100, '0', '0')
@@ -46,12 +47,15 @@ Blockchain.prototype.createNewTransaction = function (amount, sender, recipient)
   const newTransaction = {
     amount,
     sender,
-    recipient
+    recipient,
+    transactionId: uuid().split('-').join('')
   }
-  this.pendingTransactions.push(newTransaction);
-  //I am returning an index number of blocks where this newTransaction will be stored. at this moment, this is stored in Pending transaction array
-  //Once newBlock is created, it will be accessible by this index number in this.chain array. 
-  return this.getLastBlock().index + 1
+  return newTransaction
+}
+
+Blockchain.prototype.addTransactionToPendingTransactions = function (transactionObj) {
+  this.pendingTransactions.push(transactionObj)
+  return this.getLastBlock()['index'] + 1
 }
 
 
