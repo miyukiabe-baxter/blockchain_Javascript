@@ -67,14 +67,62 @@ app.get('/mine', (req, res) => {
 //sender = "00" means this is a reward bitcoin result of user mining bitcoin
 //recipient = this node. when this node receives request to /mine
 //this node creates new block. It means this node created a new block and this node should be rewarded.
-bitcoin.createNewTransaction(12.5, '00', nodeAddress)
-  
-  const newBlock = bitcoin.createNewBlock(nonce, previousBlockHash, newHash)
-  
-  res.json({
-    note: "New block mined successfully",
-    block: newBlock
+
+const newBlock = bitcoin.createNewBlock(nonce, previousBlockHash, newHash)
+
+const regNodesPromises = []
+bitcoin.networkNodes.forEach(networkNodeUrl => {
+  const requestOptions = {
+    uri: networkNodeUrl + '/receive-new-block',
+    method: 'POST',
+    body: { newBlock },
+    json: true
+  }
+  regNodesPromises.push(rp(requestOptions))
+})
+
+Promise.all(regNodesPromises)
+.then(data => {
+  const requestOptions = {
+    uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
+    method: 'POST',
+    body: {
+      amount: 12.5,
+      sender: '00',
+      recipient: nodeAddress
+    },
+    json: true
+  }
+  return rp(requestOptions)
   })
+  .then(data => {
+    res.json({
+    note: "New block mined and broadcast successfully",
+    block: newBlock
+    })
+  })
+})
+
+app.post('/receive-new-block', (req, res) => {
+  const { newBlock } = req.body;
+  const lastBlock = bitcoin.getLastBlock()
+  
+  const correctHash = lastBlock["hash"] === newBlock["previousBlockHash"]
+  const correctIdx = lastBlock["index"] + 1 === newBlock["index"]
+  
+  if (correctIdx && correctHash) {
+    bitcoin.chain.push(newBlock)
+    bitcoin.pendingTransactions = [];
+    res.json({
+      note: "New block received and accepted",
+      newBlock: newBlock
+    })
+  } else {
+    res.json({
+      note: "New block rejected",
+      newBlock: newBlock
+    })
+  }
 })
 
 //register a node and broadcast it the network.
