@@ -86,24 +86,51 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
   for (let i = 1; i < blockchain.length; i++) {
     const currentBlock = blockchain[i];
     const prevBlock = blockchain[i - 1];
-    const blockHash = this.hashBlock(prevBlock["hash"],{ transactions: currentBlock["transaction"], index: currentBlock["index"]}, currentBlock["nonce"])
+    
+    const blockHash = this.hashBlock(prevBlock["hash"],{ transactions: currentBlock["transactions"], index: currentBlock["index"]}, currentBlock["nonce"])
     //checking hash is starting with 0000 or not
-    if (blockHash.slice(0, 4) !== "0000") validChain = false;
+    console.log('start with 0000', blockHash.substring(0,4) !== "0000" )
+    console.log('same Hash?', currentBlock["previousHash"] !== prevBlock["hash"])
+    if (blockHash.substring(0, 4) !== '0000') validChain = false;
+    
     //checking every singleblock and checking if hash / previous hash match or not
-    if (currentBlock["previousHash"] !== prevBlock["hash"]) validChain = false;
+    if (currentBlock['previousBlockHash'] !== prevBlock['hash']) validChain = false;
   }
   //index 0 of blockchain array is genesys block. which was manually created and does not have hash.
   //therefore, it does not contain for loop checking.
    
   const genesisBlock = blockchain[0]
-  const correctNonce = genesisBlcok['nonce'] === 100;
-  const correctPreviousBlockHash = genesisBlock["previousBlockHash"] === '0'
-  const correctHash = genesisBlock["hash"] === '0'
+  const correctNonce = genesisBlock['nonce'] === 100;
+  const correctPreviousBlockHash = genesisBlock["previousBlockHash"] === "0"
+  const correctHash = genesisBlock["hash"] === "0"
   const correctTransactions = genesisBlock["transactions"].length === 0;
+  
   
   if (!correctNonce || !correctPreviousBlockHash || !correctHash || !correctTransactions) validChain = false
   
   return validChain
 }
+
+// Blockchain.prototype.chainIsValid = function(blockchain) {
+// 	let validChain = true;
+
+// 	for (var i = 1; i < blockchain.length; i++) {
+// 		const currentBlock = blockchain[i];
+// 		const prevBlock = blockchain[i - 1];
+// 		const blockHash = this.hashBlock(prevBlock['hash'], { transactions: currentBlock['transactions'], index: currentBlock['index'] }, currentBlock['nonce']);
+// 		if (blockHash.substring(0, 4) !== '0000') validChain = false;
+// 		if (currentBlock['previousBlockHash'] !== prevBlock['hash']) validChain = false;
+// 	};
+
+// 	const genesisBlock = blockchain[0];
+// 	const correctNonce = genesisBlock['nonce'] === 100;
+// 	const correctPreviousBlockHash = genesisBlock['previousBlockHash'] === '0';
+// 	const correctHash = genesisBlock['hash'] === '0';
+// 	const correctTransactions = genesisBlock['transactions'].length === 0;
+
+// 	if (!correctNonce || !correctPreviousBlockHash || !correctHash || !correctTransactions) validChain = false;
+
+// 	return validChain;
+// };
 
 module.exports = Blockchain;
